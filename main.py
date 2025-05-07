@@ -42,45 +42,66 @@ def editar_matriz(matriz):
                     print("Entrada inválida. Solo se permiten números reales.")
 
 
-def sumar_matrices(matriz1, matriz2):
-    if len(matriz1) != len(matriz2) or len(matriz1[0]) != len(matriz2[0]):
+def sumar_matrices(Matriz_A, Matriz_B):
+    if len(Matriz_A) != len(Matriz_B) or len(Matriz_A[0]) != len(Matriz_B[0]):
         raise ValueError("Las matrices deben tener las mismas dimensiones")
 
     resultado = []
-    for i in range(len(matriz1)):
+    for i in range(len(Matriz_A)):
         fila = []
-        for j in range(len(matriz1[0])):
-            suma = matriz1[i][j] + matriz2[i][j]
+        for j in range(len(Matriz_A[0])):
+            suma = Matriz_A[i][j] + Matriz_B[i][j]
             fila.append(suma)
         resultado.append(fila)
     return resultado
 
-def restar_matrices(matriz1, matriz2):
-    if len(matriz1) != len(matriz2) or len(matriz1[0]) != len(matriz2[0]):
+def restar_matrices(Matriz_A, Matriz_B):
+    if len(Matriz_A) != len(Matriz_B) or len(Matriz_A[0]) != len(Matriz_B[0]):
         raise ValueError("Las matrices deben tener las mismas dimensiones")
 
     resultado = []
-    for i in range(len(matriz1)):
+    for i in range(len(Matriz_A)):
         fila = []
-        for j in range(len(matriz1[0])):
-            suma = matriz1[i][j] - matriz2[i][j]
+        for j in range(len(Matriz_A[0])):
+            suma = Matriz_A[i][j] - Matriz_B[i][j]
             fila.append(suma)
         resultado.append(fila)
     return resultado
 
+def multiplicar_matrices(Matriz_A, Matriz_B):
+    if len(Matriz_A[0]) != len(Matriz_B):
+        raise ValueError("No se pueden multiplicar: columnas de Matriz_A ≠ filas de Matriz_B")
 
-matriz = InitMatriz(3, 3)
-matriz1 = InitMatriz(3, 3)
+    filas_A = len(Matriz_A)
+    columnas_B = len(Matriz_B[0])
+    columnas_A = len(Matriz_A[0])
+    
+    #matriz tamaño M x R
+    resultado = [[0 for _ in range(columnas_B)] for _ in range(filas_A)]
 
-editar_matriz(matriz)
-editar_matriz(matriz1)
+    # Realizamos la multiplicación
+    for i in range(filas_A):
+        for j in range(columnas_B):
+            for k in range(columnas_A):
+                resultado[i][j] += Matriz_A[i][k] * Matriz_B[k][j]
+
+    return resultado
+
+
+Matriz_A = InitMatriz(3, 3)
+Matriz_B = InitMatriz(3, 3)
+
+editar_matriz(Matriz_A)
+editar_matriz(Matriz_B)
 
 print("\nMatriz actualizada:")
-ImprimirMatriz(matriz) 
-ImprimirMatriz(matriz1) 
+ImprimirMatriz(Matriz_A) 
+ImprimirMatriz(Matriz_B) 
 
-suma = sumar_matrices(matriz, matriz1)
-resta = restar_matrices(matriz,matriz1)
+suma = sumar_matrices(Matriz_A, Matriz_B)
+resta = restar_matrices(Matriz_A,Matriz_B)
+multiplicacion = multiplicar_matrices(Matriz_A, Matriz_B)
 
 ImprimirMatriz(suma)
 ImprimirMatriz(resta)
+ImprimirMatriz(multiplicacion)
