@@ -87,6 +87,41 @@ def multiplicar_matrices(Matriz_A, Matriz_B):
 
     return resultado
 
+def determinante(matriz):
+    n = len(matriz)
+
+    if any(len(fila) != n for fila in matriz):
+        raise ValueError("La matriz debe ser cuadrada")
+
+    if n == 1:
+        return matriz[0][0]
+
+    if n == 2:
+        return matriz[0][0] * matriz[1][1] - matriz[0][1] * matriz[1][0]
+
+    det = 0
+    for col in range(n):
+        signo = (-1) ** col
+        cofactor = matriz[0][col]
+        matrizreducida = submatriz(matriz, 0, col)
+        det += signo * cofactor * determinante(matrizreducida)
+
+    return det
+
+def submatriz(matriz, fila_excluir, col_excluir):
+    matrizreducida = []
+    for i in range(len(matriz)):
+        if i == fila_excluir:
+            continue
+        fila = []
+        for j in range(len(matriz[i])):
+            if j == col_excluir:
+                continue
+            fila.append(matriz[i][j])
+        matrizreducida.append(fila)
+    return matrizreducida
+
+
 
 Matriz_A = InitMatriz(3, 3)
 Matriz_B = InitMatriz(3, 3)
@@ -101,7 +136,9 @@ ImprimirMatriz(Matriz_B)
 suma = sumar_matrices(Matriz_A, Matriz_B)
 resta = restar_matrices(Matriz_A,Matriz_B)
 multiplicacion = multiplicar_matrices(Matriz_A, Matriz_B)
+determinant = determinante(Matriz_A)
 
 ImprimirMatriz(suma)
 ImprimirMatriz(resta)
 ImprimirMatriz(multiplicacion)
+print(determinant)
