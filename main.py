@@ -32,3 +32,12 @@ def ImprimirMatriz(matriz):
     for fila in matriz:
         print(fila)
 
+
+matriz = InitMatriz(3, 3)
+
+ImprimirMatriz(matriz)
+
+editar_matriz(matriz)
+
+print("\nMatriz actualizada:")
+ImprimirMatriz(matriz) 
