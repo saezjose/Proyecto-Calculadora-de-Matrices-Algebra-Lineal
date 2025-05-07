@@ -55,6 +55,19 @@ def sumar_matrices(matriz1, matriz2):
         resultado.append(fila)
     return resultado
 
+def restar_matrices(matriz1, matriz2):
+    if len(matriz1) != len(matriz2) or len(matriz1[0]) != len(matriz2[0]):
+        raise ValueError("Las matrices deben tener las mismas dimensiones")
+
+    resultado = []
+    for i in range(len(matriz1)):
+        fila = []
+        for j in range(len(matriz1[0])):
+            suma = matriz1[i][j] - matriz2[i][j]
+            fila.append(suma)
+        resultado.append(fila)
+    return resultado
+
 
 matriz = InitMatriz(3, 3)
 matriz1 = InitMatriz(3, 3)
@@ -67,5 +80,7 @@ ImprimirMatriz(matriz)
 ImprimirMatriz(matriz1) 
 
 suma = sumar_matrices(matriz, matriz1)
+resta = restar_matrices(matriz,matriz1)
 
 ImprimirMatriz(suma)
+ImprimirMatriz(resta)
