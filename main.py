@@ -1,9 +1,9 @@
 def InitMatriz(CantidadFilas, CantidadColumnas):
     contador = 0
     NuevaMatriz = []
-    for y in range(CantidadFilas):
+    for i in range(CantidadFilas):
         nuevafila = []
-        for x in range(CantidadColumnas):
+        for j in range(CantidadColumnas):
             letra = letra_por_indice(contador)
             nuevafila.append(letra)
             contador+=1
@@ -17,6 +17,11 @@ def letra_por_indice(n):
         n = n // 26 - 1
     return resultado
 
+def ImprimirMatriz(matriz):
+    for i in range(len(matriz)):
+        print(matriz[i])
+    print("\n")
+
 def editar_matriz(matriz):
     filas = len(matriz)
     columnas = len(matriz[0]) if filas > 0 else 0
@@ -24,20 +29,43 @@ def editar_matriz(matriz):
     for i in range(filas):
         for j in range(columnas):
             actual = matriz[i][j]
-            nuevo_valor = input(f"Elemento en [{i}][{j}] (actual: '{actual}'): ")
-            if nuevo_valor.strip() != "":
-                matriz[i][j] = nuevo_valor
+            while True:
+                entrada = input(f"Elemento en [{i+1}][{j+1}] (actual: '{actual}'): ").strip()
+                if entrada == "":
+                    # Mantener el valor actual
+                    break
+                try:
+                    nuevo_valor = float(entrada)
+                    matriz[i][j] = nuevo_valor
+                    break
+                except ValueError:
+                    print("Entrada inválida. Solo se permiten números reales.")
 
-def ImprimirMatriz(matriz):
-    for fila in matriz:
-        print(fila)
+
+def sumar_matrices(matriz1, matriz2):
+    if len(matriz1) != len(matriz2) or len(matriz1[0]) != len(matriz2[0]):
+        raise ValueError("Las matrices deben tener las mismas dimensiones")
+
+    resultado = []
+    for i in range(len(matriz1)):
+        fila = []
+        for j in range(len(matriz1[0])):
+            suma = matriz1[i][j] + matriz2[i][j]
+            fila.append(suma)
+        resultado.append(fila)
+    return resultado
 
 
 matriz = InitMatriz(3, 3)
-
-ImprimirMatriz(matriz)
+matriz1 = InitMatriz(3, 3)
 
 editar_matriz(matriz)
+editar_matriz(matriz1)
 
 print("\nMatriz actualizada:")
 ImprimirMatriz(matriz) 
+ImprimirMatriz(matriz1) 
+
+suma = sumar_matrices(matriz, matriz1)
+
+ImprimirMatriz(suma)
