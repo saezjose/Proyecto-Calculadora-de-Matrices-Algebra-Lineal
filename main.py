@@ -1,3 +1,5 @@
+from fractions import Fraction
+
 def InitMatriz(CantidadFilas, CantidadColumnas):
     contador = 0
     NuevaMatriz = []
@@ -122,12 +124,48 @@ def submatriz(matriz, fila_excluir, col_excluir):
     return matrizreducida
 
 
+#Esto hice yo u.u#
+
+def matriz_inversa_gauss_jordan(matriz):
+    n = len(matriz)
+
+    # Convertir la matriz de entrada a fracciones
+    augmented = []
+    for i in range(n):
+        row = [Fraction(str(matriz[i][j])) for j in range(n)]  # Convertir cada elemento a fracción
+        for j in range(n):
+            row.append(Fraction(1.0) if i == j else Fraction(0.0))
+        augmented.append(row)
+
+    for i in range(n):
+        pivot = augmented[i][i]
+        if pivot == 0:
+            return "Matriz no invertible (pivote cero)"
+        for j in range(2 * n):
+            augmented[i][j] /= pivot
+        for k in range(n):
+            if k != i:
+                factor = augmented[k][i]
+                for j in range(2 * n):
+                    augmented[k][j] -= factor * augmented[i][j]
+
+    inversa = []
+    for i in range(n):
+        inversa.append(augmented[i][n:])
+
+    return inversa
+
+#Esto hice yo u.u# #por cualquier error que salga xd
+
 
 Matriz_A = InitMatriz(3, 3)
 Matriz_B = InitMatriz(3, 3)
 
 editar_matriz(Matriz_A)
 editar_matriz(Matriz_B)
+
+inversa = matriz_inversa_gauss_jordan(Matriz_A)
+
 
 print("\nMatriz actualizada:")
 ImprimirMatriz(Matriz_A) 
@@ -138,7 +176,17 @@ resta = restar_matrices(Matriz_A,Matriz_B)
 multiplicacion = multiplicar_matrices(Matriz_A, Matriz_B)
 determinant = determinante(Matriz_A)
 
+print("Suma")
 ImprimirMatriz(suma)
+
+print("resta")
 ImprimirMatriz(resta)
+
+print("multiplicacion")
 ImprimirMatriz(multiplicacion)
+
+print("determinante")
 print(determinant)
+
+print("inversa")
+ImprimirMatriz(inversa)
