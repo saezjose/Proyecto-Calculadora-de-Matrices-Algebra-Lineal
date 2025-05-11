@@ -1,49 +1,7 @@
+import tkinter as tk
 from fractions import Fraction
 
-def InitMatriz(CantidadFilas, CantidadColumnas):
-    contador = 0
-    NuevaMatriz = []
-    for i in range(CantidadFilas):
-        nuevafila = []
-        for j in range(CantidadColumnas):
-            letra = letra_por_indice(contador)
-            nuevafila.append(letra)
-            contador+=1
-        NuevaMatriz.append(nuevafila)
-    return NuevaMatriz
-
-def letra_por_indice(n):
-    resultado = ''
-    while n >= 0:
-        resultado = chr(n % 26 + ord('A')) + resultado
-        n = n // 26 - 1
-    return resultado
-
-def ImprimirMatriz(matriz):
-    for i in range(len(matriz)):
-        print(matriz[i])
-    print("\n")
-
-def editar_matriz(matriz):
-    filas = len(matriz)
-    columnas = len(matriz[0]) if filas > 0 else 0
-
-    for i in range(filas):
-        for j in range(columnas):
-            actual = matriz[i][j]
-            while True:
-                entrada = input(f"Elemento en [{i+1}][{j+1}] (actual: '{actual}'): ").strip()
-                if entrada == "":
-                    # Mantener el valor actual
-                    break
-                try:
-                    nuevo_valor = float(entrada)
-                    matriz[i][j] = nuevo_valor
-                    break
-                except ValueError:
-                    print("Entrada inválida. Solo se permiten números reales.")
-
-
+# ============================ FUNCIONES MATEMÁTICAS ============================
 def sumar_matrices(Matriz_A, Matriz_B):
     if len(Matriz_A) != len(Matriz_B) or len(Matriz_A[0]) != len(Matriz_B[0]):
         raise ValueError("Las matrices deben tener las mismas dimensiones")
@@ -72,26 +30,22 @@ def restar_matrices(Matriz_A, Matriz_B):
 
 def multiplicar_matrices(Matriz_A, Matriz_B):
     if len(Matriz_A[0]) != len(Matriz_B):
-        raise ValueError("No se pueden multiplicar: columnas de Matriz_A ≠ filas de Matriz_B")
+        raise ValueError("No se pueden multiplicar: columnas de A ≠ filas de B")
 
     filas_A = len(Matriz_A)
     columnas_B = len(Matriz_B[0])
     columnas_A = len(Matriz_A[0])
     
-    #matriz tamaño M x R
     resultado = [[0 for _ in range(columnas_B)] for _ in range(filas_A)]
 
-    # Realizamos la multiplicación
     for i in range(filas_A):
         for j in range(columnas_B):
             for k in range(columnas_A):
                 resultado[i][j] += Matriz_A[i][k] * Matriz_B[k][j]
-
     return resultado
 
 def determinante(matriz):
     n = len(matriz)
-
     if any(len(fila) != n for fila in matriz):
         raise ValueError("La matriz debe ser cuadrada")
 
@@ -107,7 +61,6 @@ def determinante(matriz):
         cofactor = matriz[0][col]
         matrizreducida = submatriz(matriz, 0, col)
         det += signo * cofactor * determinante(matrizreducida)
-
     return det
 
 def submatriz(matriz, fila_excluir, col_excluir):
@@ -123,8 +76,6 @@ def submatriz(matriz, fila_excluir, col_excluir):
         matrizreducida.append(fila)
     return matrizreducida
 
-
-#Esto hice yo u.u#
 
 def matriz_inversa_gauss_jordan(matriz):
     n = len(matriz)
@@ -155,38 +106,134 @@ def matriz_inversa_gauss_jordan(matriz):
 
     return inversa
 
-#Esto hice yo u.u# #por cualquier error que salga xd
+# ============================ INTERFAZ GRÁFICA ============================
+COLOR_FONDO = "#dcdcdc"
+COLOR_PANEL = "#f4f4f4"
+COLOR_BOTON = "#666666"
+COLOR_BOTON_OPERACION = "#ff704d"
+FUENTE = ("Helvetica", 10)
+
+root = tk.Tk()
+root.title("Calculadora de Matrices")
+root.configure(bg=COLOR_FONDO)
+root.resizable(False, False)
+
+# Componentes de la interfaz
+frame_resultado = tk.Frame(root, bg=COLOR_PANEL, relief="solid", bd=1)
+frame_resultado.place(x=400, y=20, width=380, height=180)
+
+resultado_texto = tk.Text(
+    frame_resultado, height=10, width=40, bg=COLOR_PANEL,
+    fg="#000000", font=("Courier New", 10), bd=0
+)
+resultado_texto.pack(expand=True, fill="both")
+
+def mostrar_resultado(texto):
+    resultado_texto.delete("1.0", tk.END)
+    resultado_texto.insert(tk.END, texto)
+
+# Matrices A y B
+frame_matrices = tk.Frame(root, bg=COLOR_FONDO)
+frame_matrices.place(x=20, y=20)
+
+FILAS, COLUMNAS = 3, 3
+entradas_A, entradas_B = [], []
+
+tk.Label(frame_matrices, text="Matriz A", bg=COLOR_FONDO, font=("Helvetica", 12, "bold")).grid(row=0, column=0, columnspan=3, pady=5)
+tk.Label(frame_matrices, text="Matriz B", bg=COLOR_FONDO, font=("Helvetica", 12, "bold")).grid(row=0, column=4, columnspan=3, pady=5)
+
+for i in range(FILAS):
+    fila_A, fila_B = [], []
+    for j in range(COLUMNAS):
+        eA = tk.Entry(frame_matrices, width=5, justify="center", font=FUENTE)
+        eA.grid(row=i+1, column=j, padx=4, pady=3)
+        fila_A.append(eA)
+
+        eB = tk.Entry(frame_matrices, width=5, justify="center", font=FUENTE)
+        eB.grid(row=i+1, column=j+4, padx=4, pady=3)
+        fila_B.append(eB)
+    entradas_A.append(fila_A)
+    entradas_B.append(fila_B)
+
+# Funciones de operaciones
+def obtener_matriz(entradas):
+    matriz = []
+    for fila in entradas:
+        nueva_fila = []
+        for e in fila:
+            try:
+                valor = e.get().strip()
+                nueva_fila.append(float(valor) if valor else 0.0)
+            except:
+                nueva_fila.append(0.0)
+        matriz.append(nueva_fila)
+    return matriz
+
+def matriz_a_string(m):
+    if isinstance(m, str):
+        return m
+    try:
+        return "\n".join(["\t".join([f"{x:.2f}" for x in fila]) for fila in m])
+    except:
+        return str(m)
+
+# Botones de operaciones
+frame_botones = tk.Frame(root, bg=COLOR_FONDO)
+frame_botones.place(x=20, y=160)
+
+def crear_boton(texto, comando, color=COLOR_BOTON):
+    return tk.Button(
+        frame_botones, text=texto, width=14, height=2,
+        bg=color, fg="white", font=FUENTE, command=comando
+    )
+
+def operacion_sumar():
+    A = obtener_matriz(entradas_A)
+    B = obtener_matriz(entradas_B)
+    try:
+        resultado = sumar_matrices(A, B)
+        mostrar_resultado("Suma A+B:\n" + matriz_a_string(resultado))
+    except Exception as e:
+        mostrar_resultado(f"Error: {str(e)}")
+
+def operacion_restar():
+    A = obtener_matriz(entradas_A)
+    B = obtener_matriz(entradas_B)
+    try:
+        resultado = restar_matrices(A, B)
+        mostrar_resultado("Resta A-B:\n" + matriz_a_string(resultado))
+    except Exception as e:
+        mostrar_resultado(f"Error: {str(e)}")
+
+def operacion_multiplicar():
+    A = obtener_matriz(entradas_A)
+    B = obtener_matriz(entradas_B)
+    try:
+        resultado = multiplicar_matrices(A, B)
+        mostrar_resultado("Multiplicación A×B:\n" + matriz_a_string(resultado))
+    except Exception as e:
+        mostrar_resultado(f"Error: {str(e)}")
+
+def operacion_inversa():
+    A = obtener_matriz(entradas_A)
+    resultado = matriz_inversa_gauss_jordan(A)
+    mostrar_resultado("Inversa de A:\n" + matriz_a_string(resultado))
+
+def operacion_determinante():
+    A = obtener_matriz(entradas_A)
+    try:
+        det = determinante(A)
+        mostrar_resultado(f"Determinante de A:\n{det:.2f}")
+    except Exception as e:
+        mostrar_resultado(f"Error: {str(e)}")
 
 
-Matriz_A = InitMatriz(3, 3)
-Matriz_B = InitMatriz(3, 3)
+crear_boton("Sumar", operacion_sumar, COLOR_BOTON_OPERACION).grid(row=0, column=0, padx=5, pady=5)
+crear_boton("Restar", operacion_restar, COLOR_BOTON_OPERACION).grid(row=0, column=1, padx=5, pady=5)
+crear_boton("Multiplicar", operacion_multiplicar).grid(row=1, column=0, padx=5, pady=5)
+crear_boton("Inversa A", operacion_inversa).grid(row=1, column=1, padx=5, pady=5)
+crear_boton("Determinante A", operacion_determinante).grid(row=2, column=0, padx=5, pady=5)
 
-editar_matriz(Matriz_A)
-editar_matriz(Matriz_B)
+root.geometry("800x350")
+root.mainloop()
 
-inversa = matriz_inversa_gauss_jordan(Matriz_A)
-
-
-print("\nMatriz actualizada:")
-ImprimirMatriz(Matriz_A) 
-ImprimirMatriz(Matriz_B) 
-
-suma = sumar_matrices(Matriz_A, Matriz_B)
-resta = restar_matrices(Matriz_A,Matriz_B)
-multiplicacion = multiplicar_matrices(Matriz_A, Matriz_B)
-determinant = determinante(Matriz_A)
-
-print("Suma")
-ImprimirMatriz(suma)
-
-print("resta")
-ImprimirMatriz(resta)
-
-print("multiplicacion")
-ImprimirMatriz(multiplicacion)
-
-print("determinante")
-print(determinant)
-
-print("inversa")
-ImprimirMatriz(inversa)
