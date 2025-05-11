@@ -106,6 +106,31 @@ def matriz_inversa_gauss_jordan(matriz):
 
     return inversa
 
+def factorizacion_LU(matriz):
+    n = len(matriz)
+    
+    # Crear matrices L y U inicializadas con ceros
+    L = [[0 for _ in range(n)] for _ in range(n)]
+    U = [[0 for _ in range(n)] for _ in range(n)]
+
+    for i in range(n):
+        for j in range(i, n):
+            U[i][j] = matriz[i][j]
+        
+        for j in range(i, n):
+            if i == j:
+                L[i][i] = 1 
+            else:
+                L[j][i] = matriz[j][i] / U[i][i]
+
+        # Realizar eliminación de Gauss para ajustar la matriz U
+        for j in range(i + 1, n):
+            for k in range(i + 1, n):
+                matriz[j][k] -= L[j][i] * U[i][k]
+
+    return L, U
+
+
 # ============================ INTERFAZ GRÁFICA ============================
 COLOR_FONDO = "#dcdcdc"
 COLOR_PANEL = "#f4f4f4"
@@ -233,7 +258,20 @@ def operacion_determinante():
     except Exception as e:
         mostrar_resultado(f"Error: {str(e)}")
 
+def operacion_LU():
+    A = obtener_matriz(entradas_A)
+    try:
+        # Hacer una copia de A para no modificarla
+        import copy
+        A_copia = copy.deepcopy(A)
+        L, U = factorizacion_LU(A_copia)
+        texto = "Factorización LU de A:\n\nMatriz L:\n" + matriz_a_string(L) + "\n\nMatriz U:\n" + matriz_a_string(U)
+        mostrar_resultado(texto)
+    except Exception as e:
+        mostrar_resultado(f"Error: {str(e)}")
 
+
+crear_boton("LU de A", operacion_LU).grid(row=2, column=1, padx=5, pady=5)
 crear_boton("Sumar", operacion_sumar, COLOR_BOTON_OPERACION).grid(row=0, column=0, padx=5, pady=5)
 crear_boton("Restar", operacion_restar, COLOR_BOTON_OPERACION).grid(row=0, column=1, padx=5, pady=5)
 crear_boton("Multiplicar", operacion_multiplicar).grid(row=1, column=0, padx=5, pady=5)
