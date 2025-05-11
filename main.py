@@ -49,13 +49,16 @@ def determinante(matriz):
     if any(len(fila) != n for fila in matriz):
         raise ValueError("La matriz debe ser cuadrada")
 
+    # Convertir todos los elementos a fracción
+    matriz = [[Fraction(str(elem)) for elem in fila] for fila in matriz]
+
     if n == 1:
         return matriz[0][0]
 
     if n == 2:
         return matriz[0][0] * matriz[1][1] - matriz[0][1] * matriz[1][0]
 
-    det = 0
+    det = Fraction(0)
     for col in range(n):
         signo = (-1) ** col
         cofactor = matriz[0][col]
@@ -253,7 +256,7 @@ def operacion_determinante():
     try:
         det_A = determinante(A)
         det_B = determinante(B)
-        resultado = f"Determinante de A: {det_A:.2f}\nDeterminante de B: {det_B:.2f}"
+        resultado = f"Determinante de A: {float(det_A):.2f}\nDeterminante de B: {float(det_B):.2f}"
         mostrar_resultado(resultado)
     except Exception as e:
         mostrar_resultado(f"Error: {str(e)}")
