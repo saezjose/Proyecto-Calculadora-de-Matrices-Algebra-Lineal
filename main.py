@@ -216,14 +216,20 @@ def operacion_multiplicar():
 
 def operacion_inversa():
     A = obtener_matriz(entradas_A)
-    resultado = matriz_inversa_gauss_jordan(A)
-    mostrar_resultado("Inversa de A:\n" + matriz_a_string(resultado))
+    B = obtener_matriz(entradas_B)
+    inversa_A = matriz_inversa_gauss_jordan(A)
+    inversa_B = matriz_inversa_gauss_jordan(B)
+    resultado = "Inversa de A:\n" + matriz_a_string(inversa_A) + "\n\nInversa de B:\n" + matriz_a_string(inversa_B)
+    mostrar_resultado(resultado)
 
 def operacion_determinante():
     A = obtener_matriz(entradas_A)
+    B = obtener_matriz(entradas_B)
     try:
-        det = determinante(A)
-        mostrar_resultado(f"Determinante de A:\n{det:.2f}")
+        det_A = determinante(A)
+        det_B = determinante(B)
+        resultado = f"Determinante de A: {det_A:.2f}\nDeterminante de B: {det_B:.2f}"
+        mostrar_resultado(resultado)
     except Exception as e:
         mostrar_resultado(f"Error: {str(e)}")
 
@@ -231,8 +237,8 @@ def operacion_determinante():
 crear_boton("Sumar", operacion_sumar, COLOR_BOTON_OPERACION).grid(row=0, column=0, padx=5, pady=5)
 crear_boton("Restar", operacion_restar, COLOR_BOTON_OPERACION).grid(row=0, column=1, padx=5, pady=5)
 crear_boton("Multiplicar", operacion_multiplicar).grid(row=1, column=0, padx=5, pady=5)
-crear_boton("Inversa A", operacion_inversa).grid(row=1, column=1, padx=5, pady=5)
-crear_boton("Determinante A", operacion_determinante).grid(row=2, column=0, padx=5, pady=5)
+crear_boton("Inversa ", operacion_inversa).grid(row=1, column=1, padx=5, pady=5)
+crear_boton("Determinante ", operacion_determinante).grid(row=2, column=0, padx=5, pady=5)
 
 root.geometry("800x350")
 root.mainloop()
