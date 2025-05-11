@@ -161,7 +161,7 @@ def mostrar_resultado(texto):
 frame_matrices = tk.Frame(root, bg=COLOR_FONDO)
 frame_matrices.place(x=20, y=20)
 
-FILAS, COLUMNAS = 3, 3
+FILAS, COLUMNAS = 4, 4
 entradas_A, entradas_B = [], []
 
 tk.Label(frame_matrices, text="Matriz A", bg=COLOR_FONDO, font=("Helvetica", 12, "bold")).grid(row=0, column=0, columnspan=3, pady=5)
@@ -184,23 +184,27 @@ for i in range(FILAS):
 def obtener_matriz(entradas):
     matriz = []
     for fila in entradas:
-        nueva_fila = []
-        for e in fila:
-            try:
-                valor = e.get().strip()
-                nueva_fila.append(float(valor) if valor else 0.0)
-            except:
-                nueva_fila.append(0.0)
-        matriz.append(nueva_fila)
+        fila_valores = []
+        for entrada in fila:
+            valor = entrada.get()
+            if valor == '':
+                fila_valores.append(None)
+            else:
+                fila_valores.append(float(valor))
+        matriz.append(fila_valores)
+
+    # Eliminar filas vacías
+    matriz = [fila for fila in matriz if any(x is not None for x in fila)]
+
+    # Determinar columnas no vacías
+    if matriz:
+        columnas_validas = [i for i in range(len(matriz[0])) if any(fila[i] is not None for fila in matriz)]
+        matriz = [[fila[i] for i in columnas_validas] for fila in matriz]
+
     return matriz
 
-def matriz_a_string(m):
-    if isinstance(m, str):
-        return m
-    try:
-        return "\n".join(["\t".join([f"{x:.2f}" for x in fila]) for fila in m])
-    except:
-        return str(m)
+def matriz_a_string(matriz):
+    return '\n'.join(['\t'.join(['' if x is None else str(round(x, 2)) for x in fila]) for fila in matriz])
 
 # Botones de operaciones
 frame_botones = tk.Frame(root, bg=COLOR_FONDO)
