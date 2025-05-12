@@ -1,5 +1,9 @@
 import tkinter as tk
 from fractions import Fraction
+from PIL import Image, ImageTk
+from tkinter import Label
+
+
 
 # ============================ FUNCIONES MATEMÁTICAS ============================
 def sumar_matrices(Matriz_A, Matriz_B):
@@ -143,9 +147,19 @@ root.title("Calculadora de Matrices")
 root.configure(bg=COLOR_FONDO)
 root.resizable(False, False)
 
+
+imagen_original = Image.open("Calculadora.png")
+imagen_redimensionada = imagen_original.resize((350, 150))  # tamaño deseado
+imagen_tk = ImageTk.PhotoImage(imagen_redimensionada)
+
+# Crear un Label con la imagen
+label_imagen = Label(root, image=imagen_tk)
+label_imagen.image = imagen_tk  # guardar una referencia
+label_imagen.place(x=460, y=220)
+
 # Componentes de la interfaz
 frame_resultado = tk.Frame(root, bg=COLOR_PANEL, relief="solid", bd=1)
-frame_resultado.place(x=400, y=20, width=380, height=180)
+frame_resultado.place(x=460, y=20, width=355, height=180)
 
 resultado_texto = tk.Text(
     frame_resultado, height=10, width=40, bg=COLOR_PANEL,
@@ -175,7 +189,7 @@ for i in range(FILAS):
         fila_A.append(eA)
 
         eB = tk.Entry(frame_matrices, width=5, justify="center", font=FUENTE)
-        eB.grid(row=i+1, column=j+4, padx=4, pady=3)
+        eB.grid(row=i+1, column=j+6, padx=4, pady=3)
         fila_B.append(eB)
     entradas_A.append(fila_A)
     entradas_B.append(fila_B)
@@ -208,11 +222,11 @@ def matriz_a_string(matriz):
 
 # Botones de operaciones
 frame_botones = tk.Frame(root, bg=COLOR_FONDO)
-frame_botones.place(x=20, y=160)
+frame_botones.place(x=15, y=210)
 
 def crear_boton(texto, comando, color=COLOR_BOTON):
     return tk.Button(
-        frame_botones, text=texto, width=14, height=2,
+        frame_botones, text=texto, width=23, height=2,
         bg=color, fg="white", font=FUENTE, command=comando
     )
 
@@ -282,6 +296,6 @@ crear_boton("Multiplicar", operacion_multiplicar).grid(row=1, column=0, padx=5, 
 crear_boton("Inversa ", operacion_inversa).grid(row=1, column=1, padx=5, pady=5)
 crear_boton("Determinante ", operacion_determinante).grid(row=2, column=0, padx=5, pady=5)
 
-root.geometry("800x350")
+root.geometry("850x400")
 root.mainloop()
 
