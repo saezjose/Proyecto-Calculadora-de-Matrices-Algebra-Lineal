@@ -146,21 +146,26 @@ def operacion_multiplicar():
 def operacion_inversa():
     A = obtener_matriz(entradas_A)
     B = obtener_matriz(entradas_B)
-    if A is None or B is None: return
 
     resultado = ""
 
-    try:
-        inversa_A = main.matriz_inversa_gauss_jordan(A)
-        resultado += "Inversa de A:\n" + matriz_a_string(inversa_A) + "\n\n"
-    except Exception as e:
-        resultado += f"Inversa de A: Error - {str(e)}\n\n"
+    if A:
+        try:
+            inversa_A = main.matriz_inversa_gauss_jordan(A)
+            resultado += "Inversa de A:\n" + matriz_a_string(inversa_A) + "\n\n"
+        except Exception as e:
+            resultado += f"Inversa de A: Error - {str(e)}\n\n"
 
-    try:
-        inversa_B = main.matriz_inversa_gauss_jordan(B)
-        resultado += "Inversa de B:\n" + matriz_a_string(inversa_B)
-    except Exception as e:
-        resultado += f"Inversa de B: Error - {str(e)}"
+    if B:
+        try:
+            inversa_B = main.matriz_inversa_gauss_jordan(B)
+            resultado += "Inversa de B:\n" + matriz_a_string(inversa_B)
+        except Exception as e:
+            resultado += f"Inversa de B: Error - {str(e)}"
+
+    if not A and not B:
+        mostrar_resultado("Error: Ingresa al menos una matriz para calcular la inversa.")
+        return
 
     mostrar_resultado(resultado)
 
