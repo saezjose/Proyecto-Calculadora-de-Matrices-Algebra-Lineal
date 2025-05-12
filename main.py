@@ -84,10 +84,11 @@ def submatriz(matriz, fila_excluir, col_excluir):
 def matriz_inversa_gauss_jordan(matriz):
     n = len(matriz)
 
-    # Convertir la matriz de entrada a fracciones
+    if not matriz or any(len(fila) != n for fila in matriz):
+        raise ValueError("La matriz debe ser cuadrada y no vacía")
     augmented = []
     for i in range(n):
-        row = [Fraction(str(matriz[i][j])) for j in range(n)]  # Convertir cada elemento a fracción
+        row = [Fraction(str(matriz[i][j])) for j in range(n)]
         for j in range(n):
             row.append(Fraction(1.0) if i == j else Fraction(0.0))
         augmented.append(row)
@@ -95,7 +96,7 @@ def matriz_inversa_gauss_jordan(matriz):
     for i in range(n):
         pivot = augmented[i][i]
         if pivot == 0:
-            return "Matriz no invertible (pivote cero)"
+            raise ValueError("Matriz no invertible (pivote cero)")
         for j in range(2 * n):
             augmented[i][j] /= pivot
         for k in range(n):
@@ -109,6 +110,7 @@ def matriz_inversa_gauss_jordan(matriz):
         inversa.append(augmented[i][n:])
 
     return inversa
+
 
 def factorizacion_LU(matriz):
     n = len(matriz)
@@ -260,10 +262,25 @@ def operacion_multiplicar():
 def operacion_inversa():
     A = obtener_matriz(entradas_A)
     B = obtener_matriz(entradas_B)
-    inversa_A = matriz_inversa_gauss_jordan(A)
-    inversa_B = matriz_inversa_gauss_jordan(B)
-    resultado = "Inversa de A:\n" + matriz_a_string(inversa_A) + "\n\nInversa de B:\n" + matriz_a_string(inversa_B)
+
+    resultado = ""
+
+    # Intentar inversa de A
+    try:
+        inversa_A = matriz_inversa_gauss_jordan(A)
+        resultado += "Inversa de A:\n" + matriz_a_string(inversa_A) + "\n\n"
+    except Exception as e:
+        resultado += f"Inversa de A: Error - {str(e)}\n\n"
+
+    # Intentar inversa de B
+    try:
+        inversa_B = matriz_inversa_gauss_jordan(B)
+        resultado += "Inversa de B:\n" + matriz_a_string(inversa_B)
+    except Exception as e:
+        resultado += f"Inversa de B: Error - {str(e)}"
+
     mostrar_resultado(resultado)
+
 
 def operacion_determinante():
     A = obtener_matriz(entradas_A)
