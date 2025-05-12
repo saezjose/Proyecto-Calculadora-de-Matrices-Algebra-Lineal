@@ -98,6 +98,7 @@ def limpiar_entradas():
     for fila in entradas_A + entradas_B:
         for entrada in fila:
             entrada.delete(0, tk.END)
+    text_ecuaciones.delete("1.0", tk.END)
 
 def matriz_a_string(matriz):
     return '\n'.join(['\t'.join(['' if x is None else str(x) for x in fila]) for fila in matriz])
@@ -196,5 +197,77 @@ crear_boton("Inversa ", operacion_inversa).grid(row=1, column=1, padx=5, pady=5)
 crear_boton("Determinante ", operacion_determinante).grid(row=2, column=0, padx=5, pady=5)
 crear_boton("Limpiar Entradas", limpiar_entradas, "#888888").grid(row=3, column=0, columnspan=2, padx=5, pady=5)
 
-root.geometry("850x450")
+# Label para ecuaciones
+label_ecuaciones = tk.Label(frame_botones, text="Ecuaciones (una por línea, hasta 4 incógnitas):", bg=COLOR_FONDO, font=FUENTE)
+label_ecuaciones.grid(row=4, column=0, columnspan=2, pady=(10, 0))
+
+# Text widget para ingresar ecuaciones
+text_ecuaciones = tk.Text(frame_botones, height=6, width=50, font=FUENTE)
+text_ecuaciones.grid(row=5, column=0, columnspan=2, pady=5)
+
+def parsear_ecuaciones(texto):
+    import re
+    lineas = texto.strip().split('\n')
+    if len(lineas) == 0 or len(lineas) > 4:
+        raise ValueError("Ingresa entre 1 y 4 ecuaciones.")
+    
+    variables = []
+    coeficientes = []
+    terminos = []
+
+    var_pattern = re.compile(r'([a-zA-Z])')
+    variables = sorted(set(var_pattern.findall(lineas[0])))
+
+    if len(variables) == 0 or len(variables) > 4:
+        raise ValueError("Las ecuaciones deben contener entre 1 y 4 incógnitas.")
+
+    for linea in lineas:
+        # Separar términos y término independiente
+        if '=' not in linea:
+            raise ValueError("Cada ecuación debe contener un signo '='.")
+        izquierda, derecha = linea.split('=')
+        derecha = derecha.strip()
+        izquierda = izquierda.strip()
+
+        coef = [0] * len(variables)
+
+        # Buscar coeficientes para cada variable
+        for i, var in enumerate(variables):
+            # Buscar términos con la variable
+            pattern = re.compile(r'([+-]?\s*\d*\/?\d*)\s*' + re.escape(var))
+            matches = pattern.findall(izquierda)
+            total_coef = 0
+            for match in matches:
+                coef_str = match.replace(' ', '')
+                if coef_str in ['', '+', '-']:
+                    coef_str += '1'
+                try:
+                    total_coef += float(Fraction(coef_str))
+                except Exception:
+                    raise ValueError(f"Coeficiente inválido: {coef_str}")
+            coef[i] = total_coef
+
+        coeficientes.append(coef)
+        try:
+            terminos.append(float(Fraction(derecha)))
+        except Exception:
+            raise ValueError(f"Término independiente inválido: {derecha}")
+
+    return coeficientes, terminos
+
+def resolver_sistema():
+    texto = text_ecuaciones.get("1.0", tk.END)
+    try:
+        coef, term = parsear_ecuaciones(texto)
+        solucion = main.gauss_jordan_sistema(coef, term)
+        resultado = "Solución:\n"
+        for i, val in enumerate(solucion):
+            resultado += f"{chr(120 + i)} = {val}\n"
+        mostrar_resultado(resultado)
+    except Exception as e:
+        mostrar_resultado(f"Error: {str(e)}")
+
+crear_boton("Resolver Sistema", resolver_sistema, "#4CAF50").grid(row=6, column=0, columnspan=2, pady=10)
+
+root.geometry("850x650")
 root.mainloop()

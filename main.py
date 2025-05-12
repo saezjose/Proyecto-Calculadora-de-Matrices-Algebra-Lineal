@@ -181,3 +181,43 @@ def factorizacion_LU(matriz):
                 matriz[j][k] -= L[j][i] * U[i][k]
 
     return L, U
+
+def gauss_jordan_sistema(coeficientes, terminos_independientes):
+    from copy import deepcopy
+    n = len(coeficientes)
+    if any(len(fila) != n for fila in coeficientes):
+        raise ValueError("La matriz de coeficientes debe ser cuadrada")
+
+    coeficientes = convertir_a_fracciones(coeficientes)
+    terminos_independientes = [Fraction(str(x)) for x in terminos_independientes]
+
+    # Crear matriz aumentada
+    augmented = [coeficientes[i] + [terminos_independientes[i]] for i in range(n)]
+
+    for i in range(n):
+        # Buscar pivote
+        pivot = augmented[i][i]
+        if pivot == 0:
+            # Buscar fila para intercambiar
+            for r in range(i+1, n):
+                if augmented[r][i] != 0:
+                    augmented[i], augmented[r] = augmented[r], augmented[i]
+                    pivot = augmented[i][i]
+                    break
+            else:
+                raise ValueError("El sistema no tiene solución única (pivote cero)")
+
+        # Normalizar fila pivote
+        for j in range(i, n+1):
+            augmented[i][j] /= pivot
+
+        # Eliminar otras filas
+        for k in range(n):
+            if k != i:
+                factor = augmented[k][i]
+                for j in range(i, n+1):
+                    augmented[k][j] -= factor * augmented[i][j]
+
+    # Extraer soluciones
+    solucion = [augmented[i][n] for i in range(n)]
+    return solucion
