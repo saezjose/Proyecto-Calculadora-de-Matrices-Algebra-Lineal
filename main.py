@@ -1,6 +1,17 @@
 from fractions import Fraction
 
+def verificar_matriz_valida(matriz):
+    """Verifica si la matriz está completa (sin celdas vacías)."""
+    for fila in matriz:
+        if None in fila:  # Si hay valores vacíos
+            return False
+    return True
+
 def sumar_matrices(Matriz_A, Matriz_B):
+
+    if not verificar_matriz_valida(Matriz_A) or not verificar_matriz_valida(Matriz_B):
+        raise ValueError("Algunas celdas de las matrices están vacías. Por favor, ingresa todos los valores.")
+    
     if len(Matriz_A) != len(Matriz_B) or len(Matriz_A[0]) != len(Matriz_B[0]):
         raise ValueError("Las matrices deben tener las mismas dimensiones")
 
@@ -14,6 +25,10 @@ def sumar_matrices(Matriz_A, Matriz_B):
     return resultado
 
 def restar_matrices(Matriz_A, Matriz_B):
+
+    if not verificar_matriz_valida(Matriz_A) or not verificar_matriz_valida(Matriz_B):
+        raise ValueError("Algunas celdas de las matrices está vacías. Por favor, ingresa todos los valores.")
+
     if len(Matriz_A) != len(Matriz_B) or len(Matriz_A[0]) != len(Matriz_B[0]):
         raise ValueError("Las matrices deben tener las mismas dimensiones")
 
@@ -27,6 +42,10 @@ def restar_matrices(Matriz_A, Matriz_B):
     return resultado
 
 def multiplicar_matrices(Matriz_A, Matriz_B):
+
+    if not verificar_matriz_valida(Matriz_A) or not verificar_matriz_valida(Matriz_B):
+        raise ValueError("Algunas celdas de las matrices está vacías. Por favor, ingresa todos los valores.")
+
     if len(Matriz_A[0]) != len(Matriz_B):
         raise ValueError("No se pueden multiplicar: columnas de A ≠ filas de B")
 
@@ -43,6 +62,9 @@ def multiplicar_matrices(Matriz_A, Matriz_B):
     return resultado
 
 def determinante(matriz):
+    if not verificar_matriz_valida(matriz):
+        raise ValueError("Algunas celdas de las matrices están vacías. Por favor, ingresa todos los valores.")
+
     n = len(matriz)
     if any(len(fila) != n for fila in matriz):
         raise ValueError("La matriz debe ser cuadrada")
@@ -78,8 +100,12 @@ def submatriz(matriz, fila_excluir, col_excluir):
 def matriz_inversa_gauss_jordan(matriz):
     n = len(matriz)
 
+    if not verificar_matriz_valida(matriz):
+        raise ValueError("Algunas celdas de las matrices están vacías. Por favor, ingresa todos los valores.")
+
     if not matriz or any(len(fila) != n for fila in matriz):
         raise ValueError("La matriz debe ser cuadrada y no vacía")
+    
     augmented = []
     for i in range(n):
         row = [Fraction(str(matriz[i][j])) for j in range(n)]
@@ -107,6 +133,12 @@ def matriz_inversa_gauss_jordan(matriz):
 
 
 def factorizacion_LU(matriz):
+    if not verificar_matriz_valida(matriz):
+        raise ValueError("Algunas celdas de las matrices están vacías. Por favor, ingresa todos los valores.")
+
+    if not matriz or any(len(fila) != len(matriz) for fila in matriz):
+        raise ValueError("La matriz debe ser cuadrada y no vacía")
+
     n = len(matriz)
     
     # Crear matrices L y U inicializadas con ceros
