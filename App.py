@@ -203,7 +203,7 @@ crear_boton("Determinante ", operacion_determinante).grid(row=2, column=0, padx=
 crear_boton("Limpiar Entradas", limpiar_entradas, "#888888").grid(row=3, column=0, columnspan=2, padx=5, pady=5)
 
 # Label para ecuaciones
-label_ecuaciones = tk.Label(frame_botones, text="Ecuaciones (una por línea, hasta 4 incógnitas):", bg=COLOR_FONDO, font=FUENTE)
+label_ecuaciones = tk.Label(frame_botones, text="Ecuaciones (una por línea, hasta 4 incógnitas: X Y Z W):", bg=COLOR_FONDO, font=FUENTE)
 label_ecuaciones.grid(row=4, column=0, columnspan=2, pady=(10, 0))
 
 # Text widget para ingresar ecuaciones
@@ -216,15 +216,9 @@ def parsear_ecuaciones(texto):
     if len(lineas) == 0 or len(lineas) > 4:
         raise ValueError("Ingresa entre 1 y 4 ecuaciones.")
     
-    variables = []
+    variables = ['x', 'y', 'z', 'w']  # Variables fijas en orden
     coeficientes = []
     terminos = []
-
-    var_pattern = re.compile(r'([a-zA-Z])')
-    variables = sorted(set(var_pattern.findall(lineas[0])))
-
-    if len(variables) == 0 or len(variables) > 4:
-        raise ValueError("Las ecuaciones deben contener entre 1 y 4 incógnitas.")
 
     for linea in lineas:
         # Separar términos y término independiente
@@ -238,7 +232,6 @@ def parsear_ecuaciones(texto):
 
         # Buscar coeficientes para cada variable
         for i, var in enumerate(variables):
-            # Buscar términos con la variable
             pattern = re.compile(r'([+-]?\s*\d*\/?\d*)\s*' + re.escape(var))
             matches = pattern.findall(izquierda)
             total_coef = 0
@@ -266,8 +259,9 @@ def resolver_sistema():
         coef, term = parsear_ecuaciones(texto)
         solucion = main.gauss_jordan_sistema(coef, term)
         resultado = "Solución:\n"
+        variables = ['x', 'y', 'z', 'w']
         for i, val in enumerate(solucion):
-            resultado += f"{chr(120 + i)} = {val}\n"
+            resultado += f"{variables[i]} = {val}\n"
         mostrar_resultado(resultado)
     except Exception as e:
         mostrar_resultado(f"Error: {str(e)}")
