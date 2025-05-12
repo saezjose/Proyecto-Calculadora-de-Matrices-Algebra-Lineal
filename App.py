@@ -2,6 +2,7 @@ import main
 import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import Label
+from fractions import Fraction
 
 COLOR_FONDO = "#dcdcdc"
 COLOR_PANEL = "#f4f4f4"
@@ -71,7 +72,10 @@ def obtener_matriz(entradas):
             if valor == '':
                 fila_valores.append(None)
             else:
-                fila_valores.append(float(valor))
+                try:
+                    fila_valores.append(Fraction(valor))
+                except Exception as e:
+                     mostrar_resultado(f"Error: {str(e)}")
         matriz.append(fila_valores)
 
     # Eliminar filas vacías
@@ -83,6 +87,11 @@ def obtener_matriz(entradas):
         matriz = [[fila[i] for i in columnas_validas] for fila in matriz]
 
     return matriz
+
+def limpiar_entradas():
+    for fila in entradas_A + entradas_B:
+        for entrada in fila:
+            entrada.delete(0, tk.END)
 
 def matriz_a_string(matriz):
     return '\n'.join(['\t'.join(['' if x is None else str(round(x, 2)) for x in fila]) for fila in matriz])
@@ -153,7 +162,7 @@ def operacion_determinante():
     try:
         det_A = main.determinante(A)
         det_B = main.determinante(B)
-        resultado = f"Determinante de A: {det_A:.2f}\nDeterminante de B: {det_B:.2f}"
+        resultado = f"Determinante de A: {det_A}\nDeterminante de B: {det_B}"
         mostrar_resultado(resultado)
     except Exception as e:
         mostrar_resultado(f"Error: {str(e)}")
@@ -177,7 +186,9 @@ crear_boton("Restar", operacion_restar, COLOR_BOTON_OPERACION).grid(row=0, colum
 crear_boton("Multiplicar", operacion_multiplicar).grid(row=1, column=0, padx=5, pady=5)
 crear_boton("Inversa ", operacion_inversa).grid(row=1, column=1, padx=5, pady=5)
 crear_boton("Determinante ", operacion_determinante).grid(row=2, column=0, padx=5, pady=5)
+crear_boton("Limpiar Entradas", limpiar_entradas, "#888888").grid(row=3, column=0, columnspan=2, padx=5, pady=5)
 
-root.geometry("850x400")
+
+root.geometry("850x450")
 root.mainloop()
 

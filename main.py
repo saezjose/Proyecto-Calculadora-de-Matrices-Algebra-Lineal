@@ -7,6 +7,10 @@ def verificar_matriz_valida(matriz):
             return False
     return True
 
+def convertir_a_fracciones(matriz):
+    return [[Fraction(str(elem)) for elem in fila] for fila in matriz]
+
+
 def sumar_matrices(Matriz_A, Matriz_B):
 
     if not verificar_matriz_valida(Matriz_A) or not verificar_matriz_valida(Matriz_B):
@@ -14,6 +18,9 @@ def sumar_matrices(Matriz_A, Matriz_B):
     
     if len(Matriz_A) != len(Matriz_B) or len(Matriz_A[0]) != len(Matriz_B[0]):
         raise ValueError("Las matrices deben tener las mismas dimensiones")
+    
+    Matriz_A = convertir_a_fracciones(Matriz_A)
+    Matriz_B = convertir_a_fracciones(Matriz_B)
 
     resultado = []
     for i in range(len(Matriz_A)):
@@ -31,6 +38,9 @@ def restar_matrices(Matriz_A, Matriz_B):
 
     if len(Matriz_A) != len(Matriz_B) or len(Matriz_A[0]) != len(Matriz_B[0]):
         raise ValueError("Las matrices deben tener las mismas dimensiones")
+    
+    Matriz_A = convertir_a_fracciones(Matriz_A)
+    Matriz_B = convertir_a_fracciones(Matriz_B)
 
     resultado = []
     for i in range(len(Matriz_A)):
@@ -48,6 +58,9 @@ def multiplicar_matrices(Matriz_A, Matriz_B):
 
     if len(Matriz_A[0]) != len(Matriz_B):
         raise ValueError("No se pueden multiplicar: columnas de A ≠ filas de B")
+   
+    Matriz_A = convertir_a_fracciones(Matriz_A)
+    Matriz_B = convertir_a_fracciones(Matriz_B)
 
     filas_A = len(Matriz_A)
     columnas_B = len(Matriz_B[0])
@@ -68,6 +81,9 @@ def determinante(matriz):
     n = len(matriz)
     if any(len(fila) != n for fila in matriz):
         raise ValueError("La matriz debe ser cuadrada")
+
+    # Convertir todos los elementos a fracción
+    matriz = convertir_a_fracciones(matriz)
 
     if n == 1:
         return matriz[0][0]
@@ -106,6 +122,8 @@ def matriz_inversa_gauss_jordan(matriz):
     if not matriz or any(len(fila) != n for fila in matriz):
         raise ValueError("La matriz debe ser cuadrada y no vacía")
     
+    matriz = convertir_a_fracciones(matriz)    
+    
     augmented = []
     for i in range(n):
         row = [Fraction(str(matriz[i][j])) for j in range(n)]
@@ -140,6 +158,8 @@ def factorizacion_LU(matriz):
         raise ValueError("La matriz debe ser cuadrada y no vacía")
 
     n = len(matriz)
+
+    matriz = convertir_a_fracciones(matriz)  
     
     # Crear matrices L y U inicializadas con ceros
     L = [[0 for _ in range(n)] for _ in range(n)]
