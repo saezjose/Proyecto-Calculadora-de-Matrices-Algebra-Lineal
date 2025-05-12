@@ -94,7 +94,8 @@ def limpiar_entradas():
             entrada.delete(0, tk.END)
 
 def matriz_a_string(matriz):
-    return '\n'.join(['\t'.join(['' if x is None else str(round(x, 2)) for x in fila]) for fila in matriz])
+    return '\n'.join(['\t'.join(['' if x is None else str(x) for x in fila]) for fila in matriz])
+
 
 # Botones de operaciones
 frame_botones = tk.Frame(root, bg=COLOR_FONDO)
