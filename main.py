@@ -134,9 +134,20 @@ def matriz_inversa_gauss_jordan(matriz):
     for i in range(n):
         pivot = augmented[i][i]
         if pivot == 0:
-            raise ValueError("Matriz no invertible (pivote cero)")
+            # Intentar intercambiar filas si el pivote es cero
+            for r in range(i + 1, n):
+                if augmented[r][i] != 0:
+                    augmented[i], augmented[r] = augmented[r], augmented[i]
+                    pivot = augmented[i][i]
+                    break
+            else:
+                raise ValueError("Matriz no invertible (pivote cero sin fila para intercambiar)")
+
+        # Normalizar fila
         for j in range(2 * n):
             augmented[i][j] /= pivot
+
+        # Eliminar otras filas
         for k in range(n):
             if k != i:
                 factor = augmented[k][i]

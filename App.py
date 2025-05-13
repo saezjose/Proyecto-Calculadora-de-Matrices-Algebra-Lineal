@@ -216,7 +216,24 @@ def parsear_ecuaciones(texto):
     if len(lineas) == 0 or len(lineas) > 4:
         raise ValueError("Ingresa entre 1 y 4 ecuaciones.")
     
-    variables = ['x', 'y', 'z', 'w']  # Variables fijas en orden
+    # Variables permitidas en orden
+    variables_permitidas = ['x', 'y', 'z', 'w']
+    
+    # Detectar variables usadas en las ecuaciones (solo x,y,z,w)
+    variables_usadas = []
+    for var in variables_permitidas:
+        # Use regex to find variable as a letter possibly preceded by + or - and optional spaces, case-insensitive
+        pattern_var = re.compile(re.escape(var), re.IGNORECASE)
+        if any(pattern_var.search(linea) for linea in lineas):
+            variables_usadas.append(var)
+    
+    if len(variables_usadas) == 0:
+        raise ValueError("No se detectaron variables válidas (X, Y, Z, W).")
+    if len(variables_usadas) > 4:
+        raise ValueError("Solo se permiten hasta 4 variables (X, Y, Z, W).")
+    if len(lineas) != len(variables_usadas):
+        raise ValueError("El número de ecuaciones debe ser igual al número de variables detectadas.")
+    
     coeficientes = []
     terminos = []
 
@@ -228,11 +245,11 @@ def parsear_ecuaciones(texto):
         derecha = derecha.strip()
         izquierda = izquierda.strip()
 
-        coef = [0] * len(variables)
+        coef = [0] * len(variables_usadas)
 
-        # Buscar coeficientes para cada variable
-        for i, var in enumerate(variables):
-            pattern = re.compile(r'([+-]?\s*\d*\/?\d*)\s*' + re.escape(var))
+        # Buscar coeficientes para cada variable usada
+        for i, var in enumerate(variables_usadas):
+            pattern = re.compile(r'([+-]?\s*\d*\/?\d*)\s*' + re.escape(var), re.IGNORECASE)
             matches = pattern.findall(izquierda)
             total_coef = 0
             for match in matches:
@@ -245,23 +262,39 @@ def parsear_ecuaciones(texto):
                     raise ValueError(f"Coeficiente inválido: {coef_str}")
             coef[i] = total_coef
 
-        coeficientes.append(coef)
+        # Detectar términos constantes en el lado izquierdo (sin variables)
+        # Remover términos con variables para encontrar constantes
+        izquierda_sin_vars = izquierda
+        for var in variables_usadas:
+            izquierda_sin_vars = re.sub(r'([+-]?\s*\d*\/?\d*)\s*' + re.escape(var), '', izquierda_sin_vars, flags=re.IGNORECASE)
+        # Buscar constantes en izquierda_sin_vars
+        constantes = re.findall(r'([+-]?\s*\d+\/?\d*)', izquierda_sin_vars)
+        suma_constantes = 0
+        for c in constantes:
+            c_str = c.replace(' ', '')
+            try:
+                suma_constantes += float(Fraction(c_str))
+            except Exception:
+                raise ValueError(f"Término constante inválido: {c_str}")
+
+        # Ajustar término independiente moviendo constantes al lado derecho con signo opuesto
         try:
-            terminos.append(float(Fraction(derecha)))
+            terminos.append(float(Fraction(derecha)) - suma_constantes)
         except Exception:
             raise ValueError(f"Término independiente inválido: {derecha}")
 
-    return coeficientes, terminos
+        coeficientes.append(coef)
+
+    return coeficientes, terminos, variables_usadas
 
 def resolver_sistema():
     texto = text_ecuaciones.get("1.0", tk.END)
     try:
-        coef, term = parsear_ecuaciones(texto)
+        coef, term, variables_usadas = parsear_ecuaciones(texto)
         solucion = main.gauss_jordan_sistema(coef, term)
         resultado = "Solución:\n"
-        variables = ['x', 'y', 'z', 'w']
         for i, val in enumerate(solucion):
-            resultado += f"{variables[i]} = {val}\n"
+            resultado += f"{variables_usadas[i]} = {val}\n"
         mostrar_resultado(resultado)
     except Exception as e:
         mostrar_resultado(f"Error: {str(e)}")
